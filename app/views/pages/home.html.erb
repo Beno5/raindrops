@@ -1,100 +1,51 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>Raindrops</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      text-align: center;
-      background-color: #f0f0f0;
-    }
+<div class="container">
+  <h1>Raindrops</h1>
 
-    h1 {
-      color: #333;
-    }
+  <div class="results">
+    <% @results.each do |result| %>
+      <div class="result">
+        <p><strong>Number:</strong> <%= result.first %></p>
+        <p><strong>Result:</strong> <%= result.second %></p>
+      </div>
+    <% end %>
+  </div>
 
-    .results {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-    }
+  <div class="input-container">
+    <input type="text" id="numberInput" placeholder="Enter a number">
+    <button id="generateButton">Generate</button>
+    <button id="generateRandomButton">Generate Random from 1 to 10000</button>
+  </div>
 
-    .result {
-      margin: 10px;
-      padding: 10px;
-      background-color: #fff;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-      text-align: center;
-      width: 200px;
-    }
-
-    .input-container {
-      margin: 20px;
-    }
-
-    input[type="text"] {
-      padding: 5px;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-    }
-
-    button {
-      padding: 5px 10px;
-      background-color: #007bff;
-      color: #fff;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-  </style>
-</head>
-<body>
-<h1>Raindrops</h1>
-
-<!-- Results -->
-<div class="results">
-  <% @results.each do |result| %>
+  <div class="generated_result results">
     <div class="result">
-      <p><strong>Input:</strong> <%= result.first %></p>
-      <p><strong>Output:</strong> <%= result.second %></p>
+      <p><strong>Number:</strong> <%= @generated_result&.first %></p>
+      <p><strong>Result:</strong> <%= @generated_result&.second %></p>
     </div>
-  <% end %>
+  </div>  
 </div>
 
-
-<!-- Input field and button -->
-<div class="input-container">
-  <input type="text" id="numberInput" placeholder="Enter a number">
-  <a id="generateLink" href="#">Generate</a>
-</div>
-
-
-
-<!-- Display result -->
-<div class="generated_result">
-    <p><strong>Input:</strong> <%= @generated_result.first %></p>
-    <p><strong>Output:</strong> <%= @generated_result.second %></p>
-</div>  
-
-<!-- JavaScript to handle link click -->
 <script>
   document.addEventListener("DOMContentLoaded", function () {
     const numberInput = document.getElementById("numberInput");
-    const generateLink = document.getElementById("generateLink");
+    const generateButton = document.getElementById("generateButton");
+    const generateRandomButton = document.getElementById("generateRandomButton");
 
-    generateLink.addEventListener("click", function (event) {
+    generateButton.addEventListener("click", function (event) {
       event.preventDefault();
-      const number = numberInput.value;
-
-      // Generate the URL with the number as the id parameter
-      const url = "/pages/home/" + encodeURIComponent(number);
-
-      // Navigate to the generated URL
-      window.location.href = url;
+      generateRaindrops();
     });
+
+    generateRandomButton.addEventListener("click", function (event) {
+      event.preventDefault();
+      const randomNumber = Math.floor(Math.random() * 10000);
+      numberInput.value = randomNumber;
+      generateRaindrops();
+    });
+
+    function generateRaindrops() {
+      const number = numberInput.value;
+      const url = "/pages/home/" + encodeURIComponent(number);
+      window.location.href = url;
+    }
   });
 </script>
-
-</body>
-</html>

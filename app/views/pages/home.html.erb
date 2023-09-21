@@ -1,7 +1,25 @@
-<div class="container">
-  <h1>Raindrops</h1>
+ <div class="container">
+    <h1>Raindrops</h1>
 
-  <div class="results">
+    <div class="rules">
+      <h2>Rules:</h2>
+      <p>For the numbers from one to 24, we want to print ...</p>
+      <ul>
+        <li>"pling" for any time the number is divisible by "2"</li>
+        <li>"plang" for any time the number is divisible by "3"</li>
+        <li>"plong" for any time the number is divisible by "5"</li>
+        <li>"tshäng" for any time the number is divisible by "17"</li>
+        <li>"blob" if the number is not divisible by any of those primes</li>
+      </ul>
+      <p>The number of divisions is also important:</p>
+      <ul>
+        <li>If the number contains one of those prime factors two times, the sound is louder ("PLING" instead of "pling").</li>
+        <li>If the number contains one of those prime factors three times, the sound is even louder ("*PLING*" instead of "pling").</li>
+        <li>If the number contains one of those prime factors four times, the sound is the louder followed by the normal sound (16 = "*PLING* pling").</li>
+      </ul>
+    </div>
+
+    <div class="results">
     <% @results.each do |result| %>
       <div class="result">
         <p><strong>Number:</strong> <%= result.first %></p>
@@ -10,42 +28,67 @@
     <% end %>
   </div>
 
-  <div class="input-container">
-    <input type="text" id="numberInput" placeholder="Enter a number">
-    <button id="generateButton">Generate</button>
-    <button id="generateRandomButton">Generate Random from 1 to 10000</button>
-  </div>
-
-  <div class="generated_result results">
-    <div class="result">
-      <p><strong>Number:</strong> <%= @generated_result&.first %></p>
-      <p><strong>Result:</strong> <%= @generated_result&.second %></p>
-    </div>
-  </div>  
+    <div class="input-container">
+  <input type="number" id="numberInput" placeholder="Enter a number">
+  <button id="generateButton">Generate</button>
+  <button id="generateRandomButton">Generate random number from 1 to 10000</button>
 </div>
 
+    <div class="generated_result results">
+      <div class="result">
+        <p><strong>Number:</strong> </p>
+        <p><strong>Result:</strong> </p>
+      </div>
+    </div>
+  </div>
+
 <script>
-  document.addEventListener("DOMContentLoaded", function () {
-    const numberInput = document.getElementById("numberInput");
-    const generateButton = document.getElementById("generateButton");
-    const generateRandomButton = document.getElementById("generateRandomButton");
+  document.addEventListener('DOMContentLoaded', function () {
+    const generateButton = document.getElementById('generateButton');
+    const generateRandomButton = document.getElementById('generateRandomButton');
+    const numberInput = document.getElementById('numberInput');
+    const generatedResult = document.querySelector('.generated_result .result');
 
-    generateButton.addEventListener("click", function (event) {
-      event.preventDefault();
-      generateRaindrops();
+    generateButton.addEventListener('click', function () {
+      // Your existing code for generating data based on user input
+      const inputNumber = numberInput.value;
+
+      fetch(`/api_data/get_data?number=${inputNumber}`)
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.success) {
+            // Handle the API response data here
+            generatedResult.innerHTML = `
+              <p><strong>Number:</strong> ${inputNumber}</p>
+              <p><strong>Result:</strong> ${data.result}</p>
+            `;
+          } else {
+            // Handle API errors
+            generatedResult.innerHTML = 'Error: ' + data.error;
+          }
+        })
+        .catch((error) => {
+          console.error('Error fetching data:', error);
+        });
     });
 
-    generateRandomButton.addEventListener("click", function (event) {
-      event.preventDefault();
-      const randomNumber = Math.floor(Math.random() * 10000);
-      numberInput.value = randomNumber;
-      generateRaindrops();
-    });
+    generateRandomButton.addEventListener('click', function () {
+      // Generate a random number between 1 and 10,000
+      const randomNum = Math.floor(Math.random() * 10000) + 1;
 
-    function generateRaindrops() {
-      const number = numberInput.value;
-      const url = "/pages/home/" + encodeURIComponent(number);
-      window.location.href = url;
-    }
+      // Set the random number to the input field
+      numberInput.value = randomNum;
+
+numberInput.addEventListener('keypress', function (event) {
+  if (event.key === 'Enter') {
+    generateButton.click();
+  }
+});
+
+      // Trigger the "Generate" button click event
+      generateButton.click();
+
+      
+    });
   });
 </script>
